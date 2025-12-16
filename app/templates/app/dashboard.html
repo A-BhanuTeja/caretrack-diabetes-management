@@ -1,0 +1,144 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Dashboard - {{ patient.name }} - CareTrack{% endblock %}
+
+{% block extra_css %}
+<style>
+    .stat-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+    }
+    .stat-value {
+        font-size: 2rem;
+        font-weight: bold;
+    }
+    .stat-label {
+        font-size: 0.9rem;
+        opacity: 0.9;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h2><i class="fas fa-chart-line"></i> Dashboard</h2>
+                <p class="text-muted">Patient: <strong>{{ patient.name }}</strong></p>
+            </div>
+            <div>
+                <a href="{% url 'app:patient_detail' patient.pk %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Patient
+                </a>
+                <a href="{% url 'app:add_sugar_reading' patient.pk %}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add Reading
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if stats %}
+<!-- Statistics Cards -->
+<div class="row">
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+            <div class="stat-label">Average Fasting</div>
+            <div class="stat-value">{{ stats.avg_fasting|floatformat:1 }}</div>
+            <small>mg/dL</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+            <div class="stat-label">Average Post-Meal</div>
+            <div class="stat-value">{{ stats.avg_postmeal|floatformat:1 }}</div>
+            <small>mg/dL</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+            <div class="stat-label">Lowest Fasting</div>
+            <div class="stat-value">{{ stats.min_fasting }}</div>
+            <small>mg/dL</small>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="stat-card" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);">
+            <div class="stat-label">Highest Fasting</div>
+            <div class="stat-value">{{ stats.max_fasting }}</div>
+            <small>mg/dL</small>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-area"></i> Sugar Level Trends (Last 30 Readings)</h5>
+            </div>
+            <div class="card-body">
+                {% if graph_html %}
+                    {{ graph_html|safe }}
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Not enough data to display graph. Add more readings to see trends.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Additional Stats -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-info-circle"></i> Summary</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Total Readings:</strong> {{ readings_count }}</p>
+                <p><strong>Patient BMI:</strong> {{ patient.bmi|floatformat:2 }}</p>
+                <p><strong>Target Fasting Range:</strong> 70-100 mg/dL</p>
+                <p><strong>Target Post-Meal Range:</strong> &lt; 140 mg/dL</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-lightbulb"></i> Insights</h6>
+            </div>
+            <div class="card-body">
+                {% if stats.avg_fasting <= 100 %}
+                <p class="text-success">✓ Your average fasting sugar is within normal range!</p>
+                {% else %}
+                <p class="text-danger">✗ Your average fasting sugar is above normal range.</p>
+                {% endif %}
+
+                {% if stats.avg_postmeal < 140 %}
+                <p class="text-success">✓ Your average post-meal sugar is within normal range!</p>
+                {% else %}
+                <p class="text-danger">✗ Your average post-meal sugar is above normal range.</p>
+                {% endif %}
+
+                {% if stats.max_fasting > 125 %}
+                <p class="text-warning"><i class="fas fa-exclamation-triangle"></i> You've had some high fasting readings. Consider consulting your doctor.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
+<div class="alert alert-warning text-center">
+    <i class="fas fa-exclamation-triangle"></i> No readings available yet. 
+    <a href="{% url 'app:add_sugar_reading' patient.pk %}">Add your first reading</a> to see your dashboard.
+</div>
+{% endif %}
+{% endblock %}

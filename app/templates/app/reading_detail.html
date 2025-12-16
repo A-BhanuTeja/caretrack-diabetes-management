@@ -1,0 +1,319 @@
+{% extends 'app/base.html' %}
+
+{% block title %}Reading Details - CareTrack{% endblock %}
+
+{% block extra_css %}
+<style>
+    .meal-card {
+        border-left: 4px solid #667eea;
+        margin-bottom: 15px;
+    }
+    .food-item {
+        padding: 5px 10px;
+        margin: 5px 0;
+        background: #f8f9fa;
+        border-radius: 5px;
+    }
+    .tip-badge {
+        display: inline-block;
+        padding: 8px 15px;
+        margin: 5px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2><i class="fas fa-tint"></i> Sugar Reading Details</h2>
+        <p class="text-muted">Patient: <strong>{{ reading.patient.name }}</strong> | Date: <strong>{{ reading.reading_date|date:"F d, Y" }}</strong></p>
+        <hr>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Reading Values -->
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-chart-bar"></i> Blood Sugar Levels</h5>
+            </div>
+            <div class="card-body text-center">
+                <div class="mb-4">
+                    <h1 class="display-4 text-primary">{{ reading.sugar_before_breakfast }}</h1>
+                    <p class="mb-1"><strong>Fasting Sugar</strong></p>
+                    <span class="badge 
+                        {% if status.fasting == 'Normal' %}bg-success
+                        {% elif status.fasting == 'High' %}bg-danger
+                        {% else %}bg-warning{% endif %} fs-6">
+                        {{ status.fasting }}
+                    </span>
+                </div>
+                <div>
+                    <h1 class="display-4 text-danger">{{ reading.sugar_after_breakfast }}</h1>
+                    <p class="mb-1"><strong>Post-Meal Sugar</strong></p>
+                    <span class="badge 
+                        {% if status.postmeal == 'Normal' %}bg-success
+                        {% else %}bg-danger{% endif %} fs-6">
+                        {{ status.postmeal }}
+                    </span>
+                </div>
+
+                {% if reading.notes %}
+                <div class="alert alert-secondary mt-3 text-start">
+                    <strong><i class="fas fa-sticky-note"></i> Notes:</strong><br>
+                    {{ reading.notes }}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Warning Alerts -->
+        {% if status.fasting == 'High' or status.postmeal == 'High' %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> Your blood sugar levels are elevated.
+        </div>
+        {% endif %}
+
+        {% if status.fasting == 'Low' %}
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-circle"></i> <strong>Alert:</strong> Your fasting blood sugar is low. Please eat something immediately!
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Comprehensive Diet Plan -->
+    <div class="col-md-8">
+        <!-- Breakfast -->
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0"><i class="fas fa-sun"></i> Breakfast (7:00 AM - 9:00 AM)</h5>
+            </div>
+            <div class="card-body">
+                {% for option in diet_plan.breakfast %}
+                    <div class="mb-3">
+                        <h6 class="text-primary">{{ option.name }}</h6>
+                        <ul class="list-unstyled">
+                            {% for item in option.items %}
+                            <li class="food-item">✓ {{ item }}</li>
+                            {% endfor %}
+                        </ul>
+                        <small class="text-muted">
+                            <strong>Calories:</strong> {{ option.calories }} | 
+                            <strong>Why:</strong> {{ option.why }}
+                        </small>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Mid-Morning Snack -->
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-info text-white">
+                <h6 class="mb-0"><i class="fas fa-cookie"></i> Mid-Morning Snack (10:30 AM - 11:00 AM)</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for snack in diet_plan.mid_morning_snack %}
+                    <li>{{ snack }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Lunch -->
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-utensils"></i> Lunch (12:30 PM - 1:30 PM)</h5>
+            </div>
+            <div class="card-body">
+                {% for meal in diet_plan.lunch %}
+                    <h6 class="text-success">{{ meal.name }}</h6>
+                    <ul class="list-unstyled">
+                        {% for item in meal.items %}
+                        <li class="food-item">✓ {{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    <small class="text-muted">
+                        <strong>Calories:</strong> {{ meal.calories }}
+                        {% if meal.timing %} | <strong>Best Time:</strong> {{ meal.timing }}{% endif %}
+                    </small>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Evening Snack -->
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-secondary text-white">
+                <h6 class="mb-0"><i class="fas fa-coffee"></i> Evening Snack (4:00 PM - 5:00 PM)</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for snack in diet_plan.evening_snack %}
+                    <li>{{ snack }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+
+        <!-- Dinner -->
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="fas fa-moon"></i> Dinner (7:00 PM - 8:00 PM)</h5>
+            </div>
+            <div class="card-body">
+                {% for meal in diet_plan.dinner %}
+                    <h6 class="text-primary">{{ meal.name }}</h6>
+                    <ul class="list-unstyled">
+                        {% for item in meal.items %}
+                        <li class="food-item">✓ {{ item }}</li>
+                        {% endfor %}
+                    </ul>
+                    <small class="text-muted">
+                        <strong>Calories:</strong> {{ meal.calories }}
+                        {% if meal.timing %} | <strong>Timing:</strong> {{ meal.timing }}{% endif %}
+                    </small>
+                    {% if meal.note %}
+                    <div class="alert alert-info mt-2 small">
+                        <i class="fas fa-info-circle"></i> {{ meal.note }}
+                    </div>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Bedtime Snack -->
+        {% if diet_plan.bedtime_snack %}
+        <div class="card meal-card mb-3">
+            <div class="card-header bg-dark text-white">
+                <h6 class="mb-0"><i class="fas fa-bed"></i> Bedtime Snack (Optional - 9:00 PM)</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for snack in diet_plan.bedtime_snack %}
+                    <li>{{ snack }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Foods to Eat and Avoid -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="fas fa-check-circle"></i> Foods to Include</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for food in diet_plan.foods_to_eat %}
+                    <li>{{ food }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0"><i class="fas fa-times-circle"></i> Foods to Avoid</h5>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for food in diet_plan.foods_to_avoid %}
+                    <li>{{ food }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- General Tips -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0"><i class="fas fa-lightbulb"></i> Important Tips & Guidelines</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    {% for tip in diet_plan.general_tips %}
+                    <div class="col-md-6 mb-2">
+                        <span class="tip-badge">{{ tip }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hydration & Exercise -->
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h6 class="mb-0"><i class="fas fa-tint"></i> Hydration Guide</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for item in diet_plan.hydration %}
+                    <li>{{ item }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-warning text-dark">
+                <h6 class="mb-0"><i class="fas fa-running"></i> Exercise Recommendations</h6>
+            </div>
+            <div class="card-body">
+                <ul>
+                    {% for exercise in diet_plan.exercise %}
+                    <li>{{ exercise }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Special Notes -->
+{% if diet_plan.bmi_note or diet_plan.age_note %}
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="alert alert-warning">
+            <h6><i class="fas fa-exclamation-triangle"></i> Personalized Notes:</h6>
+            {% if diet_plan.bmi_note %}<p><strong>BMI:</strong> {{ diet_plan.bmi_note }}</p>{% endif %}
+            {% if diet_plan.age_note %}<p><strong>Age:</strong> {{ diet_plan.age_note }}</p>{% endif %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Action Buttons -->
+<div class="mt-4 mb-4">
+    <a href="{% url 'app:patient_detail' reading.patient.pk %}" class="btn btn-primary">
+        <i class="fas fa-user"></i> Back to Patient
+    </a>
+    <a href="{% url 'app:dashboard' reading.patient.pk %}" class="btn btn-info">
+        <i class="fas fa-chart-line"></i> View Dashboard
+    </a>
+    <a href="{% url 'app:add_sugar_reading' reading.patient.pk %}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Add Another Reading
+    </a>
+    <button onclick="window.print()" class="btn btn-secondary">
+        <i class="fas fa-print"></i> Print Diet Plan
+    </button>
+</div>
+{% endblock %}
