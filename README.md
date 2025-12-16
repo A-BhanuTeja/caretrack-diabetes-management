@@ -161,7 +161,7 @@ Planned features for future versions:
 - [ ] User authentication & role-based access
 - [ ] Export reports (CSV / PDF)
 - [ ] UI/UX enhancements
-- [ ]Deployment on cloud platform
+- [ ] Deployment on cloud platform
 
 
 ## 📝 License
