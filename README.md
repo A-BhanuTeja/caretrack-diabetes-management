@@ -225,7 +225,7 @@ This means you can freely use, modify, and distribute this software.
 
 **Bhanu Teja Amudala**
 - GitHub: [@A-BhanuTeja](https://github.com/A-BhanuTeja)
-- LinkedIn: [Connect with me]([https://linkedin.com/in/your-profile](https://www.linkedin.com/in/bhanuteja79/)) 
+- LinkedIn: [Connect with me](https://www.linkedin.com/in/bhanuteja79/) 
 - Email: bhanu44223@gmail.com
 
 *2024 Computer Science Graduate | Python Full-Stack Developer*
@@ -241,7 +241,7 @@ This means you can freely use, modify, and distribute this software.
 ## 📞 Support & Contact
 
 - **Issues:** Open an issue on GitHub
-- **Email:** your.email@example.com
+- **Email:** bhanu44223@gmail.com
 - **Documentation:** See the code comments for detailed explanations
 
 ## ⭐ Show Your Support
