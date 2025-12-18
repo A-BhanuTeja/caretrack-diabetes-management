@@ -25,7 +25,7 @@ This project was built for learning, demonstration, and portfolio purposes.
 - 🎨 Responsive UI compatible with desktop and mobile
 - 📱 Bootstrap 5 based mobile-friendly design
 
-### 🖼️ Screenshots
+
 ## 📸 Project Screenshots
 
 ### Patients List
