@@ -26,19 +26,16 @@ This project was built for learning, demonstration, and portfolio purposes.
 - 📱 Bootstrap 5 based mobile-friendly design
 
 ### 🖼️ Screenshots
-(Add screenshots after running the project)
+## 📸 Project Screenshots
 
-screenshots/
-├── home_page.png
-├── patient_dashboard.png
-├── sugar_chart.png
-├── diet_plan.png
-├── admin_panel.png
+### Patients List
+<img src="screenshots/patients-list.png" width="600"/>
 
+### Patient Details
+<img src="screenshots/patient-details.png" width="600"/>
 
-Example:
-
-![Dashboard](screenshots/patient_dashboard.png)
+### Dashboard & Charts
+<img src="screenshots/dashboard.png" width="600"/>
 
 
 Screenshots help recruiters quickly understand the project flow and UI.
